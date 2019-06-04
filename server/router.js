@@ -12,10 +12,10 @@ const requireAuth = passport.authenticate('jwt', { session: false });
 const requireRegistration = passport.authenticate('local', { session: false });
 
 module.exports = function (app) {
+  app.post('/signup', Authentication.signup);
+  app.post('/signin', requireRegistration, Authentication.signin);
+
   app.get('/', requireAuth, function (req, res) {
     res.send({ hi: 'there' });
   });
-
-  app.post('/signup', Authentication.signup);
-  app.post('/signin', requireRegistration, Authentication.signin);
 };
