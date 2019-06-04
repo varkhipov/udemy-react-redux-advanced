@@ -16,15 +16,11 @@ userSchema.pre('save', function (next) {
 
   // generate salt
   bcrypt.genSalt(10, function (err, salt) {
-    if (err) {
-      return next(err);
-    }
+    if (err) return next(err);
 
     // encrypt salted password
     bcrypt.hash(user.password, salt, null, function (err, hash) {
-      if (err) {
-        next(err);
-      }
+      if (err) { next(err); }
 
       // override plain text password with encrypted one
       user.password = hash;
@@ -34,6 +30,14 @@ userSchema.pre('save', function (next) {
     })
   })
 });
+
+// Give User object additional methods. 'comparePassword' in this case. Could have any name.
+userSchema.methods.comparePassword = function (candidatePassword, callback) {
+  bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
+    if (err) return callback(err);
+    callback(null, isMatch);
+  })
+};
 
 // Create model class
 const ModelClass = mongoose.model('user', userSchema);
